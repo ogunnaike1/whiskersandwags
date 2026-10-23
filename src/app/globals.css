@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --soft-white: #f6f9f4;
+  --mint: #d7e4d6;
+  --sage: #8fa98f;
+  --forest: #5e6f55;
+  --charcoal: #2e2e2a;
+  --error: #b4482a;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@theme inline {
+  --color-soft-white: var(--soft-white);
+  --color-mint: var(--mint);
+  --color-sage: var(--sage);
+  --color-forest: var(--forest);
+  --color-charcoal: var(--charcoal);
+  --font-manrope: var(--font-manrope);
+  --font-jakarta: var(--font-jakarta);
+  --font-outfit: var(--font-outfit);
+}
+
+html { scroll-behavior: auto; }
+body {
+  margin: 0;
+  background: var(--soft-white);
+  color: var(--charcoal);
+  font-family: var(--font-outfit), sans-serif;
+  overflow-x: hidden;
+}
+* { box-sizing: border-box; }
+a { color: var(--forest); text-decoration: none; }
+a:hover { color: var(--charcoal); }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
+.on-dark :focus-visible, .on-dark:focus-visible { outline-color: var(--soft-white); }
+
+/* hover helpers (prototype used style-hover) */
+.hv-forest:hover { background: var(--forest) !important; color: var(--soft-white) !important; }
+.hv-charcoal:hover { background: var(--charcoal) !important; color: var(--soft-white) !important; }
+.hv-glass:hover { background: rgba(246, 249, 244, 0.2) !important; }
+.hv-sage:hover { color: var(--sage) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

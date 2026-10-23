@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Outfit:wght@300;400;500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:auto}body{margin:0;background:#F6F9F4;color:#2E2E2A;font-family:'Outfit',sans-serif;overflow-x:hidden}
+*{box-sizing:border-box}a{color:#5E6F55;text-decoration:none}a:hover{color:#2E2E2A}
+button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inherit}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</helmet>
+<div style="min-height:100vh;position:relative;overflow-x:clip">
+
+<!-- NAV -->
+<header style="position:sticky;top:0;z-index:50;transition:background .4s,backdrop-filter .4s,border-color .4s,padding .4s;background:{{ navBg }};backdrop-filter:{{ navBlur }};-webkit-backdrop-filter:{{ navBlur }};border-bottom:1px solid {{ navBorder }}">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px clamp(20px,5vw,72px)">
+    <button onClick="{{ goHome }}" aria-label="Whiskers and Wags home" style="background:none;border:0;padding:0;display:flex;align-items:baseline;gap:6px;color:#2E2E2A">
+      <span style="font-family:'Manrope';font-weight:700;font-size:20px;letter-spacing:-.03em">Whiskers</span><span style="font-family:'Manrope';font-weight:300;font-size:22px;color:#5E6F55">&amp;</span><span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px;letter-spacing:-.03em">Wags</span>
+    </button>
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Primary" style="display:flex;gap:36px">
+        <sc-for list="{{ navLinks }}" as="l" hint-placeholder-count="4">
+          <button onClick="{{ l.go }}" style="background:none;border:0;padding:6px 0;font:600 14px 'Plus Jakarta Sans';letter-spacing:.01em;color:#2E2E2A;position:relative">{{ l.label }}<span style="position:absolute;left:0;bottom:0;height:1.5px;background:#5E6F55;transition:width .45s cubic-bezier(.65,0,.35,1);width:{{ l.ul }}"></span></button>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button onClick="{{ goSearch }}" aria-label="Search" style="width:44px;height:44px;background:none;border:0;display:grid;place-items:center;color:#2E2E2A"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg></button>
+      <button onClick="{{ openCart }}" aria-label="Open cart" style="position:relative;width:44px;height:44px;background:none;border:0;display:grid;place-items:center;color:#2E2E2A"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"></path><path d="M9 8V6a3 3 0 016 0v2"></path></svg>
+        <span style="position:absolute;top:3px;right:1px;min-width:18px;height:18px;border-radius:9px;background:#5E6F55;color:#fff;font:700 11px 'Plus Jakarta Sans';display:grid;place-items:center;padding:0 5px">{{ cartCount }}</span></button>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="Menu" aria-expanded="{{ menuOpen }}" style="width:44px;height:44px;background:none;border:0;display:grid;place-items:center;color:#2E2E2A"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h16M4 16h16"></path></svg></button>
+      </sc-if>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div style="position:fixed;inset:0;z-index:70;background:#2E2E2A;color:#F6F9F4;display:flex;flex-direction:column;padding:20px clamp(20px,5vw,72px) 40px;transition:clip-path .7s cubic-bezier(.76,0,.24,1);clip-path:{{ menuClip }};pointer-events:{{ menuPE }}">
+  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Manrope';font-style:italic;font-size:22px;color:#8FA98F">Whiskers &amp; Wags</span>
+  <button onClick="{{ toggleMenu }}" aria-label="Close menu" style="width:44px;height:44px;background:none;border:0;color:#F6F9F4;display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"></path></svg></button></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px">
+    <sc-for list="{{ navLinks }}" as="l" hint-placeholder-count="4">
+      <button onClick="{{ l.goM }}" style="background:none;border:0;text-align:left;color:#F6F9F4;font:700 clamp(44px,12vw,72px)/1.1 'Manrope';letter-spacing:-.04em;padding:6px 0;min-height:56px;transition:transform .6s cubic-bezier(.16,1,.3,1) {{ l.delay }},opacity .6s {{ l.delay }};transform:{{ menuItemT }};opacity:{{ menuItemO }}">{{ l.label }}</button>
+    </sc-for>
+  </div>
+  <div style="font:400 12px 'Outfit';color:#8FA98F">hello@whiskersandwags.example</div>
+</div>
+
+<!-- ================= HOME ================= -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main>
+  <!-- HERO CAROUSEL -->
+  <section data-screen-label="Home Hero" role="region" aria-roledescription="carousel" aria-label="Featured collections" onTouchStart="{{ heroTS }}" onTouchEnd="{{ heroTE }}" onMouseMove="{{ heroMM }}" style="position:relative;height:calc(100vh - 80px);min-height:580px;max-height:1000px;overflow:hidden;background:#2E2E2A;color:#F6F9F4;touch-action:pan-y">
+    <div data-speed="0.06" style="position:absolute;inset:-5% 0">
+      <sc-for list="{{ heroSlides }}" as="s" hint-placeholder-count="4">
+        <div style="position:absolute;inset:0;z-index:{{ s.z }};opacity:{{ s.vis }};clip-path:{{ s.clip }};transition:clip-path 1.5s cubic-bezier(.76,0,.24,1),opacity 0s linear {{ s.hd }}">
+          <div data-hpar="1" style="position:absolute;inset:-4%">
+            <div style="position:absolute;inset:0;background:{{ s.bg }};transform:{{ s.t }};transition:transform 2.6s cubic-bezier(.16,1,.3,1)"></div>
+          </div>
+          <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(46,46,42,.68),rgba(46,46,42,.18) 72%),linear-gradient(0deg,rgba(46,46,42,.55),transparent 45%)"></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:absolute;inset:0;z-index:10;display:grid;padding:clamp(24px,5vw,72px) clamp(20px,5vw,72px) clamp(112px,12vw,140px);pointer-events:none">
+      <sc-for list="{{ heroSlides }}" as="s" hint-placeholder-count="4">
+        <div style="grid-area:1/1;align-self:end;max-width:min(100%,780px);pointer-events:{{ s.pe }}">
+          <div style="overflow:hidden;margin-bottom:22px"><div style="display:flex;align-items:center;gap:12px;font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#D7E4D6;transform:{{ s.T }};transition:{{ s.tagTr }}"><span style="width:36px;height:1px;background:#D7E4D6"></span>{{ s.tag }}</div></div>
+          <h1 style="margin:0;font:700 clamp(42px,7vw,104px)/1 'Manrope';letter-spacing:-.045em">
+            <sc-for list="{{ s.lines }}" as="ln" hint-placeholder-count="2"><span style="display:block;overflow:hidden;padding-bottom:.1em"><span style="display:block;transform:{{ ln.T }};transition:{{ ln.tr }}">{{ ln.t }}</span></span></sc-for>
+          </h1>
+          <div style="overflow:hidden;margin:26px 0 34px"><p style="margin:0;max-width:440px;font:300 clamp(16px,1.35vw,20px)/1.6 'Outfit';color:#EEF3EC;transform:{{ s.T }};transition:{{ s.descTr }}">{{ s.desc }}</p></div>
+          <div style="overflow:hidden;padding:2px"><div style="transform:{{ s.T }};transition:{{ s.ctaTr }}"><button data-magnetic="1" onClick="{{ s.cta }}" tabindex="{{ s.tab }}" style="background:#F6F9F4;color:#2E2E2A;border:0;padding:0 30px;font:600 14px 'Plus Jakarta Sans';letter-spacing:.02em;min-height:52px" style-hover="background:#5E6F55;color:#F6F9F4">{{ s.ctaLabel }} →</button></div></div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ showGlass }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;z-index:12;right:clamp(20px,5vw,72px);bottom:clamp(28px,4vw,56px);display:grid">
+        <sc-for list="{{ heroSlides }}" as="s" hint-placeholder-count="4">
+          <button onClick="{{ s.openFt }}" tabindex="{{ s.tab }}" style="grid-area:1/1;text-align:left;color:#F6F9F4;padding:16px 20px;min-width:240px;background:rgba(246,249,244,.14);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(246,249,244,.28);box-shadow:0 18px 50px rgba(46,46,42,.18);transition:opacity .7s,transform .9s cubic-bezier(.16,1,.3,1);opacity:{{ s.gO }};transform:{{ s.gT }};pointer-events:{{ s.pe }}"><div style="font:400 11px 'Outfit';letter-spacing:.14em;color:#D7E4D6">FEATURED</div><div style="font:600 16px 'Plus Jakarta Sans';margin-top:6px;letter-spacing:-.01em">{{ s.ftName }}</div><div style="font:300 14px 'Outfit';margin-top:2px">{{ s.ftPrice }} · view piece →</div></button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <div style="position:absolute;z-index:12;left:clamp(20px,5vw,72px);bottom:clamp(28px,4vw,56px);display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(246,249,244,.14);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(246,249,244,.28);max-width:calc(100% - 40px)">
+      <button onClick="{{ heroPrev }}" aria-label="Previous slide" style="width:44px;height:44px;background:none;border:0;color:#F6F9F4;font-size:18px" style-hover="background:rgba(246,249,244,.2)">←</button>
+      <button onClick="{{ heroNext }}" aria-label="Next slide" style="width:44px;height:44px;background:none;border:0;color:#F6F9F4;font-size:18px" style-hover="background:rgba(246,249,244,.2)">→</button>
+      <span style="width:1px;height:24px;background:rgba(246,249,244,.3);margin:0 6px"></span>
+      <div style="display:flex;gap:4px;align-items:center">
+        <sc-for list="{{ heroDots }}" as="d" hint-placeholder-count="4">
+          <button onClick="{{ d.go }}" aria-label="Go to slide {{ d.n }}" aria-current="{{ d.cur }}" style="min-height:44px;padding:0 6px;background:none;border:0;color:#F6F9F4;display:flex;flex-direction:column;justify-content:center;gap:6px;opacity:{{ d.o }};transition:opacity .4s"><span style="font:500 11px 'Outfit';letter-spacing:.1em">{{ d.n }}</span><span style="display:block;height:2px;width:{{ d.w }};background:rgba(246,249,244,.3);overflow:hidden;transition:width .6s cubic-bezier(.16,1,.3,1)"><span style="display:block;height:100%;background:#F6F9F4;width:{{ d.fill }};transition:{{ d.fillTr }}"></span></span></button>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section data-screen-label="Categories" style="padding:clamp(56px,8vw,120px) clamp(20px,5vw,72px)">
+    <div data-reveal="1" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:clamp(28px,4vw,56px)">
+      <div><div style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#5E6F55;margin-bottom:14px">Shop by category</div>
+      <h2 style="margin:0;font:700 clamp(34px,4.6vw,68px)/1.02 'Manrope';letter-spacing:-.04em">Find the <span style="font:300 1.05em 'Manrope'">right</span> fit.</h2></div>
+      <button onClick="{{ goShop }}" style="background:none;border:0;border-bottom:1.5px solid #2E2E2A;padding:4px 0;font:600 14px 'Plus Jakarta Sans'">View everything →</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px;grid-auto-rows:clamp(260px,30vw,380px)">
+      <sc-for list="{{ catCards }}" as="c" hint-placeholder-count="5">
+        <button data-reveal="1" onClick="{{ c.go }}" style="position:relative;overflow:hidden;border:0;padding:0;text-align:left;color:#2E2E2A;background:#D7E4D6;grid-column:span {{ c.span }}">
+          <div style="position:absolute;inset:0;background:{{ c.bg }};transition:transform 1.1s cubic-bezier(.16,1,.3,1);transform:scale({{ c.zoom }})" onMouseEnter="{{ c.enter }}" onMouseLeave="{{ c.leave }}"></div>
+          <span style="position:absolute;left:14px;top:14px;font:400 10px 'Outfit';background:#F6F9F4;padding:3px 6px;pointer-events:none">{{ c.ph }}</span>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:22px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;background:linear-gradient(transparent,rgba(248,246,241,.0))">
+            <div style="background:rgba(248,246,241,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:12px 16px"><div style="font:700 20px 'Plus Jakarta Sans';letter-spacing:-.03em">{{ c.name }}</div><div style="font-size:12px;color:#4a4d47">{{ c.count }} pieces</div></div>
+            <span style="width:44px;height:44px;border-radius:50%;background:#2E2E2A;color:#F6F9F4;display:grid;place-items:center;transition:transform .5s cubic-bezier(.16,1,.3,1),background .3s;transform:translateX({{ c.arrow }});background:{{ c.arrowBg }}">→</span>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section data-screen-label="Featured" style="padding:clamp(40px,6vw,90px) clamp(20px,5vw,72px) clamp(56px,8vw,120px)">
+    <div data-reveal="1" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:clamp(28px,4vw,56px)">
+      <h2 style="margin:0;font:700 clamp(34px,4.6vw,68px)/1.02 'Manrope';letter-spacing:-.04em">Curated <span style="font:300 1.05em 'Manrope';color:#5E6F55">favourites</span></h2>
+      <p style="margin:0;max-width:320px;color:#4a4d47;line-height:1.55">Six pieces we’d choose for our own. Natural materials, built to last.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:clamp(20px,2.4vw,36px) 20px">
+      <sc-for list="{{ featured }}" as="p" hint-placeholder-count="6">
+        <article data-reveal="1">
+          <div style="position:relative;aspect-ratio:4/5;overflow:hidden;background:{{ p.bg }};cursor:pointer" onClick="{{ p.open }}" onMouseEnter="{{ p.enter }}" onMouseLeave="{{ p.leave }}">
+            <div style="position:absolute;inset:0;background:{{ p.bg2 }};transition:transform 1.1s cubic-bezier(.16,1,.3,1);transform:scale({{ p.zoom }})"></div>
+            <span style="position:absolute;left:12px;top:12px;font:400 10px 'Outfit';background:#F6F9F4;padding:3px 6px">PRODUCT · {{ p.ph }}</span>
+            <span style="position:absolute;right:12px;top:12px;font:600 11px 'Plus Jakarta Sans';letter-spacing:.06em;background:#5E6F55;color:#fff;padding:4px 8px;display:{{ p.tagDisp }}">{{ p.tag }}</span>
+            <button onClick="{{ p.add }}" style="position:absolute;left:12px;right:12px;bottom:12px;background:#5E6F55;color:#F6F9F4;border:0;padding:15px;font:600 13px 'Plus Jakarta Sans';letter-spacing:.03em;min-height:48px;transition:transform .55s cubic-bezier(.16,1,.3,1),opacity .4s;transform:translateY({{ p.btnY }});opacity:{{ p.btnO }}">{{ p.addLabel }}</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:12px;padding-top:14px">
+            <div><div style="font:700 17px 'Plus Jakarta Sans';letter-spacing:-.02em">{{ p.name }}</div><div style="font-size:13px;color:#6b6a60;margin-top:3px">{{ p.cat }}</div></div>
+            <div style="font:700 16px 'Plus Jakarta Sans'">{{ p.priceFmt }}</div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- BRAND STORY -->
+  <section data-screen-label="Brand Story" style="background:#8FA98F;padding:clamp(56px,8vw,130px) clamp(20px,5vw,72px);overflow:hidden">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:clamp(32px,6vw,100px);align-items:center;max-width:1400px;margin:0 auto">
+      <div style="position:relative;height:clamp(420px,52vw,680px)">
+        <div data-reveal="mask" style="position:absolute;inset:0 12% 10% 0;overflow:hidden"><div data-speed="0.05" style="position:absolute;inset:-8% 0;background:repeating-linear-gradient(135deg,#D7E4D6 0 16px,#C5D6C4 16px 32px);display:flex;align-items:flex-end;padding:18px"><span style="font:400 11px 'Outfit';color:#6b6a60;background:#F6F9F4;padding:4px 8px">PHOTO · owner and dog on a woodland walk · 4:5</span></div></div>
+        <div data-speed="-0.07" style="position:absolute;right:0;bottom:0;width:42%;height:40%;border:6px solid #8FA98F;background:repeating-linear-gradient(45deg,#F6F9F4 0 12px,#E6EEE4 12px 24px);display:flex;align-items:flex-end;padding:10px"><span style="font:400 10px 'Outfit';color:#6b6a60">PHOTO · hands, leather collar</span></div>
+      </div>
+      <div>
+        <div data-reveal="1" style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#2E2E2A;margin-bottom:20px">Our story</div>
+        <h2 data-reveal="1" style="margin:0 0 28px;font:700 clamp(38px,5.4vw,84px)/1 'Manrope';letter-spacing:-.045em">Because <span style="font:300 1.05em 'Manrope'">They’re</span> Family.</h2>
+        <p data-reveal="1" style="font-size:clamp(16px,1.3vw,19px);line-height:1.65;max-width:480px;margin:0 0 18px;color:#2E2E2A">We started Whiskers &amp; Wags because the things our animals live with should be as considered as the things we do. Honest materials. Quiet design. Nothing that ends up in a landfill by spring.</p>
+        <p data-reveal="1" style="font-size:clamp(16px,1.3vw,19px);line-height:1.65;max-width:480px;margin:0 0 34px;color:#2E2E2A">Every piece is tested at home — by a very critical panel of one beagle and two cats.</p>
+        <button data-reveal="1" data-magnetic="1" onClick="{{ goAbout }}" style="background:#5E6F55;color:#F6F9F4;border:0;padding:18px 30px;font:600 14px 'Plus Jakarta Sans';min-height:52px">Read our story →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIFESTYLE SHOWCASE -->
+  <section data-screen-label="Lifestyle Showcase" style="background:#2E2E2A;color:#F6F9F4;position:relative;overflow:hidden;padding:clamp(80px,12vw,200px) 0 clamp(60px,8vw,120px)">
+    <div style="position:relative;height:clamp(520px,70vw,900px)">
+      <h2 data-speed="0.04" style="position:absolute;left:clamp(20px,5vw,72px);top:0;margin:0;font:700 clamp(64px,15vw,240px)/.88 'Manrope';letter-spacing:-.06em;z-index:1;mix-blend-mode:normal">Slow<br><span style="font:300 1em 'Manrope';color:#8FA98F;letter-spacing:-.03em">mornings.</span></h2>
+      <div data-speed="-0.12" style="position:absolute;right:clamp(20px,6vw,100px);top:6%;width:clamp(180px,30vw,440px);aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#3b3f39 0 14px,#33372f 14px 28px);display:flex;align-items:flex-end;padding:12px;z-index:2"><span style="font:400 10px 'Outfit';color:#8FA98F;background:#2E2E2A;padding:3px 6px">PHOTO · cat on sunlit windowsill</span></div>
+      <div data-speed="0.10" style="position:absolute;left:clamp(40px,14vw,220px);bottom:0;width:clamp(200px,36vw,540px);aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#8FA98F 0 14px,#839C83 14px 28px);display:flex;align-items:flex-end;padding:12px;z-index:3"><span style="font:400 10px 'Outfit';color:#2d3a2a;background:#F6F9F4;padding:3px 6px">PHOTO · dog asleep on linen bed</span></div>
+      <div data-speed="-0.04" style="position:absolute;right:clamp(20px,8vw,140px);bottom:4%;max-width:300px;padding:22px 24px;background:rgba(248,246,241,.10);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(248,246,241,.22);z-index:4"><div style="font:400 11px 'Outfit';color:#8FA98F;margin-bottom:8px">THE LIVING EDIT</div><div style="font:300 22px/1.3 'Manrope'">Pieces that belong in your home as much as theirs.</div></div>
+    </div>
+    <!-- sticky storytelling -->
+    <div id="story" style="height:320vh;position:relative;margin-top:clamp(40px,6vw,100px)">
+      <div style="position:sticky;top:0;height:100vh;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(20px,5vw,80px);align-items:center;padding:80px clamp(20px,5vw,72px) 40px">
+        <div>
+          <div style="font:400 12px 'Outfit';color:#8FA98F;letter-spacing:.1em;margin-bottom:22px">{{ chapterNo }} / 03</div>
+          <div style="position:relative;min-height:clamp(220px,28vw,320px)">
+            <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="3">
+              <div style="position:absolute;inset:0 0 auto 0;transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);opacity:{{ ch.o }};transform:translateY({{ ch.y }})">
+                <h3 style="margin:0 0 18px;font:700 clamp(36px,5vw,72px)/1 'Manrope';letter-spacing:-.045em">{{ ch.title }}</h3>
+                <p style="margin:0;max-width:400px;font-size:clamp(16px,1.3vw,19px);line-height:1.6;color:#d9d6cc">{{ ch.body }}</p>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:20px"><sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="3"><span style="height:2px;width:{{ ch.bar }};background:{{ ch.barC }};transition:all .6s"></span></sc-for></div>
+        </div>
+        <div style="position:relative;height:min(68vh,620px)">
+          <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="3">
+            <div style="position:absolute;inset:0;background:{{ ch.bg }};transition:clip-path 1.1s cubic-bezier(.76,0,.24,1),transform 1.4s cubic-bezier(.16,1,.3,1);clip-path:{{ ch.clip }};transform:scale({{ ch.sc }});display:flex;align-items:flex-end;padding:14px"><span style="font:400 10px 'Outfit';background:#F6F9F4;color:#6b6a60;padding:3px 6px">{{ ch.ph }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section data-screen-label="Testimonials" style="padding:clamp(64px,9vw,140px) clamp(20px,5vw,72px);text-align:center;background:#F6F9F4">
+    <div data-reveal="1" style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#5E6F55;margin-bottom:34px">Kind words <span style="color:#6b6a60;letter-spacing:.06em;text-transform:none;font:400 11px 'Outfit'">· demo content</span></div>
+    <div style="max-width:880px;margin:0 auto;min-height:clamp(220px,26vw,280px);position:relative">
+      <blockquote style="margin:0;transition:opacity .5s,transform .6s cubic-bezier(.16,1,.3,1);opacity:{{ tO }};transform:translateY({{ tY }})">
+        <p style="margin:0 0 30px;font:300 clamp(26px,3.8vw,52px)/1.18 'Manrope';letter-spacing:-.01em">“{{ quote.text }}”</p>
+        <footer style="font:600 14px 'Plus Jakarta Sans'">{{ quote.who }} <span style="font-weight:400;color:#6b6a60">· {{ quote.pet }}</span></footer>
+      </blockquote>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-top:20px">
+      <button onClick="{{ prevT }}" aria-label="Previous review" style="width:48px;height:48px;border:1.5px solid #2E2E2A;background:none;color:#2E2E2A;font-size:18px" style-hover="background:#2E2E2A;color:#F6F9F4">←</button>
+      <span style="font:400 12px 'Outfit';color:#6b6a60">{{ tNo }} / {{ tTotal }}</span>
+      <button onClick="{{ nextT }}" aria-label="Next review" style="width:48px;height:48px;border:1.5px solid #2E2E2A;background:none;color:#2E2E2A;font-size:18px" style-hover="background:#2E2E2A;color:#F6F9F4">→</button>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section data-screen-label="Newsletter" style="position:relative;background:#D7E4D6;padding:clamp(48px,7vw,100px) clamp(20px,5vw,72px);overflow:hidden">
+    <div data-speed="0.08" style="position:absolute;right:-6%;top:-20%;width:46vw;max-width:620px;aspect-ratio:1;background:#8FA98F;border-radius:50%"></div>
+    <div data-reveal="1" style="position:relative;max-width:1000px;margin:0 auto;padding:clamp(28px,5vw,64px);background:rgba(255,255,255,.5);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);border:1px solid rgba(255,255,255,.75);box-shadow:0 30px 80px rgba(34,37,33,.10);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:32px;align-items:center">
+      <div><h2 style="margin:0 0 12px;font:700 clamp(30px,3.8vw,52px)/1.05 'Manrope';letter-spacing:-.04em">Letters from <span style="font:300 1.05em 'Manrope';color:#5E6F55">the pack</span></h2><p style="margin:0;color:#4a4d47;line-height:1.55">New arrivals and care notes, once a month. Never more.</p></div>
+      <form onSubmit="{{ subNews }}" noValidate="true" style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;flex-wrap:wrap;gap:10px"><input type="email" aria-label="Email address" placeholder="you@email.com" value="{{ nlEmail }}" onChange="{{ onNl }}" style="flex:1 1 200px;min-width:0;padding:16px 18px;border:1.5px solid {{ nlBorder }};background:rgba(255,255,255,.8);font-size:15px;outline:none;min-height:52px"><button type="submit" style="background:#5E6F55;color:#F6F9F4;border:0;padding:0 26px;font:600 14px 'Plus Jakarta Sans';min-height:52px" style-hover="background:#2E2E2A">Subscribe</button></div>
+        <div aria-live="polite" style="font-size:13px;min-height:18px;color:{{ nlColor }}">{{ nlMsg }}</div>
+      </form>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+<!-- ================= SHOP ================= -->
+<sc-if value="{{ isShop }}" hint-placeholder-val="{{ false }}">
+<main style="padding:clamp(32px,5vw,72px) clamp(20px,5vw,72px) clamp(56px,8vw,110px);min-height:90vh">
+  <div style="margin-bottom:clamp(28px,4vw,48px)">
+    <div style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#5E6F55;margin-bottom:16px">The Collection · Autumn</div>
+    <h1 style="margin:0;font:700 clamp(44px,8vw,120px)/.95 'Manrope';letter-spacing:-.05em">Everyday <span style="font:300 1.05em 'Manrope';color:#5E6F55">essentials.</span></h1>
+  </div>
+  <div style="position:sticky;top:80px;z-index:20;background:#F6F9F4;padding:14px 0;border-top:1px solid #D7E4D6;border-bottom:1px solid #D7E4D6;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+      <label style="flex:1 1 220px;max-width:420px;display:flex;align-items:center;gap:10px;border-bottom:1.5px solid #2E2E2A;padding:6px 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><input id="shop-search" type="search" placeholder="Search products" aria-label="Search products" value="{{ q }}" onChange="{{ onQ }}" style="flex:1;min-width:0;border:0;background:none;outline:none;font-size:16px;min-height:32px"></label>
+      <div style="display:flex;gap:10px;align-items:center">
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}"><button onClick="{{ toggleFilters }}" aria-expanded="{{ filtersOpen }}" style="min-height:44px;padding:0 16px;border:1.5px solid #2E2E2A;background:none;font:600 13px 'Plus Jakarta Sans'">Filters {{ filterBadge }}</button></sc-if>
+        <select aria-label="Sort" value="{{ sort }}" onChange="{{ onSort }}" style="min-height:44px;padding:0 12px;border:1.5px solid #2E2E2A;background:#F6F9F4;font:600 13px 'Plus Jakarta Sans'"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="az">Name: A–Z</option></select>
+      </div>
+    </div>
+    <sc-if value="{{ showChips }}" hint-placeholder-val="{{ true }}">
+      <div role="group" aria-label="Category filters" style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="6">
+          <button onClick="{{ c.go }}" aria-pressed="{{ c.on }}" style="min-height:44px;padding:0 18px;border:1.5px solid #2E2E2A;background:{{ c.bg }};color:{{ c.fg }};font:600 13px 'Plus Jakarta Sans';transition:background .3s,color .3s">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+  <div style="font:400 12px 'Outfit';color:#6b6a60;margin:20px 0">{{ resultCount }}</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:clamp(24px,3vw,40px) 20px">
+    <sc-for list="{{ shopList }}" as="p" hint-placeholder-count="8">
+      <article>
+        <div style="position:relative;aspect-ratio:4/5;overflow:hidden;background:{{ p.bg }};cursor:pointer" onClick="{{ p.open }}" onMouseEnter="{{ p.enter }}" onMouseLeave="{{ p.leave }}">
+          <div style="position:absolute;inset:0;background:{{ p.bg2 }};transition:transform 1.1s cubic-bezier(.16,1,.3,1);transform:scale({{ p.zoom }})"></div>
+          <span style="position:absolute;left:12px;top:12px;font:400 10px 'Outfit';background:#F6F9F4;padding:3px 6px">PRODUCT · {{ p.ph }}</span>
+          <span style="position:absolute;right:12px;top:12px;font:600 11px 'Plus Jakarta Sans';letter-spacing:.06em;background:#5E6F55;color:#fff;padding:4px 8px;display:{{ p.tagDisp }}">{{ p.tag }}</span>
+          <button onClick="{{ p.add }}" style="position:absolute;left:12px;right:12px;bottom:12px;background:#5E6F55;color:#F6F9F4;border:0;padding:15px;font:600 13px 'Plus Jakarta Sans';min-height:48px;transition:transform .55s cubic-bezier(.16,1,.3,1),opacity .4s;transform:translateY({{ p.btnY }});opacity:{{ p.btnO }}">{{ p.addLabel }}</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:12px;padding-top:14px"><div><div style="font:700 17px 'Plus Jakarta Sans';letter-spacing:-.02em">{{ p.name }}</div><div style="font-size:13px;color:#6b6a60;margin-top:3px">{{ p.cat }}</div></div><div style="font:700 16px 'Plus Jakarta Sans'">{{ p.priceFmt }}</div></div>
+      </article>
+    </sc-for>
+  </div>
+  <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}"><div style="padding:80px 0;text-align:center"><div style="font:300 32px 'Manrope'">Nothing matches that — yet.</div><button onClick="{{ clearFilters }}" style="margin-top:20px;background:#5E6F55;color:#F6F9F4;border:0;padding:14px 24px;font:600 14px 'Plus Jakarta Sans';min-height:48px">Clear filters</button></div></sc-if>
+</main>
+</sc-if>
+
+<!-- ================= ABOUT ================= -->
+<sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+<main>
+  <section data-screen-label="About Hero" style="position:relative;height:min(88vh,860px);min-height:520px;overflow:hidden;background:#2E2E2A;color:#F6F9F4">
+    <div data-speed="0.12" style="position:absolute;inset:-12% 0;background:repeating-linear-gradient(135deg,#3b3f39 0 18px,#33372f 18px 36px);display:flex;align-items:flex-start;padding:100px 22px"><span style="font:400 11px 'Outfit';color:#8FA98F;background:#2E2E2A;padding:4px 8px">PHOTO · wide, golden-hour meadow, woman walking two dogs · 16:9</span></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;padding:clamp(24px,5vw,72px);background:linear-gradient(transparent,rgba(34,37,33,.85))">
+      <div style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#8FA98F;margin-bottom:16px">About us</div>
+      <h1 style="margin:0;max-width:1000px;font:700 clamp(44px,8.5vw,130px)/.95 'Manrope';letter-spacing:-.05em;transition:opacity 1s .2s,transform 1.1s .2s cubic-bezier(.16,1,.3,1);opacity:{{ heroO }};transform:{{ heroP }}">Made for the ones who <span style="font:300 1.05em 'Manrope';color:#8FA98F">wait by the door.</span></h1>
+    </div>
+  </section>
+  <section style="padding:clamp(64px,9vw,140px) clamp(20px,5vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(28px,6vw,100px);max-width:1400px;margin:0 auto">
+    <div data-reveal="1" style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#5E6F55">Our mission</div>
+    <p data-reveal="1" style="margin:0;font:300 clamp(28px,3.6vw,50px)/1.18 'Manrope'">To make the everyday life of pets better — with fewer, better things, made honestly, and chosen with love.</p>
+  </section>
+  <section style="padding:0 clamp(20px,5vw,72px) clamp(64px,9vw,140px);display:grid;grid-template-columns:repeat(12,1fr);gap:14px;max-width:1400px;margin:0 auto">
+    <div data-reveal="mask" style="grid-column:span 7;min-width:0;aspect-ratio:4/3;overflow:hidden;background:repeating-linear-gradient(135deg,#D7E4D6 0 16px,#C5D6C4 16px 32px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px 'Outfit';background:#F6F9F4;padding:3px 6px;color:#6b6a60">PHOTO · studio at home, dog &amp; samples</span></div>
+    <div data-reveal="mask" style="grid-column:span 5;min-width:0;margin-top:clamp(30px,8vw,120px);aspect-ratio:3/4;overflow:hidden;background:repeating-linear-gradient(45deg,#8FA98F 0 14px,#839C83 14px 28px);display:flex;align-items:flex-end;padding:12px"><span style="font:400 10px 'Outfit';background:#F6F9F4;padding:3px 6px;color:#6b6a60">PHOTO · cat, wool basket</span></div>
+  </section>
+  <section style="background:#D7E4D6;padding:clamp(64px,9vw,130px) clamp(20px,5vw,72px)">
+    <div style="max-width:1400px;margin:0 auto">
+      <div data-reveal="1" style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#5E6F55;margin-bottom:40px">Our philosophy</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(28px,4vw,56px)">
+        <sc-for list="{{ philosophy }}" as="ph" hint-placeholder-count="3">
+          <div data-reveal="1" style="border-top:1.5px solid #2E2E2A;padding-top:20px"><div style="font:400 12px 'Outfit';color:#5E6F55">{{ ph.n }}</div><h3 style="margin:12px 0;font:700 clamp(26px,2.8vw,38px)/1.05 'Manrope';letter-spacing:-.04em">{{ ph.t }}</h3><p style="margin:0;line-height:1.6;color:#4a4d47">{{ ph.b }}</p></div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  <section style="background:#2E2E2A;color:#F6F9F4;padding:clamp(56px,8vw,110px) clamp(20px,5vw,72px)">
+    <div style="max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+        <div><div style="font:700 clamp(52px,7vw,104px)/1 'Manrope';letter-spacing:-.05em"><span data-count="{{ s.v }}">{{ s.v }}</span><span style="color:#8FA98F">{{ s.suf }}</span></div><div style="margin-top:8px;color:#8FA98F;font-size:14px">{{ s.l }}</div></div>
+      </sc-for>
+    </div>
+    <div style="font:400 11px 'Outfit';color:#6b6a60;margin-top:36px;max-width:1400px;margin-left:auto;margin-right:auto">Illustrative figures — replace with real brand data.</div>
+  </section>
+  <section style="padding:clamp(64px,9vw,130px) clamp(20px,5vw,72px);text-align:center">
+    <h2 data-reveal="1" style="margin:0 0 28px;font:700 clamp(34px,5vw,72px)/1 'Manrope';letter-spacing:-.045em">Come meet <span style="font:300 1.05em 'Manrope';color:#5E6F55">the collection.</span></h2>
+    <button data-magnetic="1" onClick="{{ goShop }}" style="background:#5E6F55;color:#F6F9F4;border:0;padding:18px 32px;font:600 14px 'Plus Jakarta Sans';min-height:52px">Shop now →</button>
+  </section>
+</main>
+</sc-if>
+
+<!-- ================= CONTACT ================= -->
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+<main>
+  <section style="position:relative;padding:clamp(40px,6vw,90px) clamp(20px,5vw,72px) clamp(56px,8vw,100px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:clamp(32px,5vw,80px);align-items:start;max-width:1500px;margin:0 auto">
+    <div>
+      <div style="font:500 12px 'Plus Jakarta Sans';letter-spacing:.18em;text-transform:uppercase;color:#5E6F55;margin-bottom:18px">Contact</div>
+      <h1 style="margin:0 0 28px;font:700 clamp(44px,7vw,104px)/.97 'Manrope';letter-spacing:-.05em;transition:opacity 1s .1s,transform 1.1s .1s cubic-bezier(.16,1,.3,1);opacity:{{ heroO }};transform:{{ heroP }}">Say <span style="font:300 1.05em 'Manrope';color:#5E6F55">hello.</span></h1>
+      <p style="max-width:420px;line-height:1.6;color:#4a4d47;margin:0 0 36px">Questions about sizing, an order, or which bed suits a senior dog? We read everything.</p>
+      <div style="position:relative;max-width:440px;padding:26px 28px;background:rgba(255,255,255,.55);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.8);box-shadow:0 24px 60px rgba(34,37,33,.10)">
+        <div style="position:absolute;z-index:-1;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:#8FA98F"></div>
+        <div style="font:400 11px 'Outfit';color:#5E6F55;margin-bottom:10px">DIRECT</div>
+        <a href="mailto:hello@whiskersandwags.example" style="font:700 20px 'Plus Jakarta Sans';letter-spacing:-.02em;color:#2E2E2A;word-break:break-word">hello@whiskersandwags.example</a>
+        <div style="font-size:13px;color:#6b6a60;margin:6px 0 18px">Replies within one working day (demo address).</div>
+        <div style="display:flex;gap:18px;font:600 13px 'Plus Jakarta Sans'"><a href="#">Instagram</a><a href="#">Pinterest</a><a href="#">TikTok</a></div>
+      </div>
+    </div>
+    <form onSubmit="{{ submitForm }}" noValidate="true" style="display:flex;flex-direction:column;gap:22px;background:#fff;padding:clamp(24px,3.5vw,48px);border:1px solid #D7E4D6">
+      <div><label for="f-name" style="display:block;font:600 13px 'Plus Jakarta Sans';margin-bottom:8px">Name</label><input id="f-name" value="{{ f.name }}" onChange="{{ onName }}" aria-invalid="{{ err.nameBool }}" style="width:100%;padding:14px 0;border:0;border-bottom:1.5px solid {{ err.nameC }};background:none;font-size:16px;outline:none;min-height:48px"><div style="color:#B4482A;font-size:13px;min-height:16px;margin-top:4px">{{ err.name }}</div></div>
+      <div><label for="f-email" style="display:block;font:600 13px 'Plus Jakarta Sans';margin-bottom:8px">Email</label><input id="f-email" type="email" value="{{ f.email }}" onChange="{{ onEmail }}" aria-invalid="{{ err.emailBool }}" style="width:100%;padding:14px 0;border:0;border-bottom:1.5px solid {{ err.emailC }};background:none;font-size:16px;outline:none;min-height:48px"><div style="color:#B4482A;font-size:13px;min-height:16px;margin-top:4px">{{ err.email }}</div></div>
+      <div><label for="f-msg" style="display:block;font:600 13px 'Plus Jakarta Sans';margin-bottom:8px">Message</label><textarea id="f-msg" rows="5" value="{{ f.message }}" onChange="{{ onMsg }}" aria-invalid="{{ err.msgBool }}" style="width:100%;padding:14px 0;border:0;border-bottom:1.5px solid {{ err.msgC }};background:none;font-size:16px;outline:none;resize:vertical"></textarea><div style="color:#B4482A;font-size:13px;min-height:16px;margin-top:4px">{{ err.message }}</div></div>
+      <button type="submit" disabled="{{ sending }}" style="align-self:flex-start;background:#5E6F55;color:#F6F9F4;border:0;padding:0 32px;font:600 14px 'Plus Jakarta Sans';min-height:52px;opacity:{{ sendO }}" style-hover="background:#2E2E2A">{{ sendLabel }}</button>
+      <div aria-live="polite" style="font-size:14px;line-height:1.5;padding:{{ statusPad }};background:#D7E4D6;display:{{ statusDisp }}">{{ status }}</div>
+    </form>
+  </section>
+  <section style="background:#D7E4D6;padding:clamp(56px,8vw,120px) clamp(20px,5vw,72px)">
+    <div style="max-width:960px;margin:0 auto">
+      <h2 data-reveal="1" style="margin:0 0 36px;font:700 clamp(32px,4vw,56px)/1 'Manrope';letter-spacing:-.04em">Good to know</h2>
+      <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="4">
+        <div style="border-top:1.5px solid #2E2E2A">
+          <button onClick="{{ q.toggle }}" aria-expanded="{{ q.open }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;background:none;border:0;padding:24px 0;text-align:left;font:700 clamp(17px,1.8vw,22px) 'Plus Jakarta Sans';letter-spacing:-.02em;color:#2E2E2A;min-height:56px">{{ q.q }}<span style="font:300 28px 'Manrope';color:#5E6F55;transition:transform .5s cubic-bezier(.16,1,.3,1);transform:rotate({{ q.rot }})">+</span></button>
+          <div style="display:grid;transition:grid-template-rows .6s cubic-bezier(.16,1,.3,1);grid-template-rows:{{ q.rows }}"><div style="overflow:hidden"><p style="margin:0;padding:0 0 26px;max-width:640px;line-height:1.65;color:#4a4d47">{{ q.a }}</p></div></div>
+        </div>
+      </sc-for>
+      <div style="border-top:1.5px solid #2E2E2A"></div>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+<!-- FOOTER -->
+<footer style="background:#2E2E2A;color:#F6F9F4;padding:clamp(48px,7vw,96px) clamp(20px,5vw,72px) 28px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:36px;max-width:1400px;margin:0 auto">
+    <div style="grid-column:span 2;min-width:min(100%,240px)"><div style="font:700 28px 'Manrope';letter-spacing:-.04em">Whiskers <span style="font:300 1.05em 'Manrope';color:#8FA98F">&amp;</span> Wags</div><p style="color:#8FA98F;max-width:300px;line-height:1.6;margin:14px 0 0">Thoughtfully chosen essentials for the pets who make life extraordinary.</p></div>
+    <div><div style="font:400 11px 'Outfit';color:#8FA98F;margin-bottom:16px">EXPLORE</div><div style="display:flex;flex-direction:column;gap:2px"><sc-for list="{{ navLinks }}" as="l" hint-placeholder-count="4"><button onClick="{{ l.goM }}" style="background:none;border:0;color:#F6F9F4;text-align:left;padding:8px 0;font-size:15px;min-height:40px" style-hover="color:#8FA98F">{{ l.label }}</button></sc-for></div></div>
+    <div><div style="font:400 11px 'Outfit';color:#8FA98F;margin-bottom:16px">SHOP</div><div style="display:flex;flex-direction:column;gap:2px"><sc-for list="{{ footCats }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.go }}" style="background:none;border:0;color:#F6F9F4;text-align:left;padding:8px 0;font-size:15px;min-height:40px" style-hover="color:#8FA98F">{{ c.name }}</button></sc-for></div></div>
+    <div><div style="font:400 11px 'Outfit';color:#8FA98F;margin-bottom:16px">CONNECT</div><div style="display:flex;flex-direction:column;gap:2px;font-size:15px"><a href="#" style="color:#F6F9F4;padding:8px 0">Instagram</a><a href="#" style="color:#F6F9F4;padding:8px 0">Pinterest</a><a href="mailto:hello@whiskersandwags.example" style="color:#F6F9F4;padding:8px 0">Email us</a></div></div>
+  </div>
+  <div style="max-width:1400px;margin:56px auto 0;padding-top:20px;border-top:1px solid #3b3f39;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:12px;color:#8a8d84"><span>© 2026 Whiskers &amp; Wags. Demo storefront.</span><span>Shipping · Returns · Privacy</span></div>
+</footer>
+
+<!-- CART DRAWER -->
+<div onClick="{{ closeCart }}" style="position:fixed;inset:0;z-index:80;background:rgba(34,37,33,.45);transition:opacity .5s;opacity:{{ cartScrimO }};pointer-events:{{ cartPE }}"></div>
+<aside aria-label="Shopping cart" style="position:fixed;top:0;right:0;bottom:0;z-index:90;width:min(100%,440px);background:#F6F9F4;display:flex;flex-direction:column;transition:transform .7s cubic-bezier(.16,1,.3,1);transform:translateX({{ cartX }});box-shadow:-20px 0 60px rgba(34,37,33,.15)">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid #D7E4D6"><div style="font:700 22px 'Manrope';letter-spacing:-.03em">Your cart <span style="font:400 13px 'Outfit';color:#6b6a60">({{ cartCount }})</span></div><button onClick="{{ closeCart }}" aria-label="Close cart" style="width:44px;height:44px;background:none;border:0;display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"></path></svg></button></div>
+  <div style="flex:1;overflow:auto;padding:8px 24px">
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding:60px 0;text-align:center"><div style="font:300 28px 'Manrope'">Your cart is empty.</div><button onClick="{{ goShopClose }}" style="margin-top:18px;background:none;border:0;border-bottom:1.5px solid #2E2E2A;font:600 14px 'Plus Jakarta Sans';padding:4px 0">Browse the collection</button></div></sc-if>
+    <sc-for list="{{ cartLines }}" as="it" hint-placeholder-count="0">
+      <div style="display:flex;gap:16px;padding:18px 0;border-bottom:1px solid #D7E4D6">
+        <div style="width:84px;height:104px;flex:none;background:{{ it.bg }}"></div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;justify-content:space-between;gap:10px"><div><div style="font:700 15px 'Plus Jakarta Sans'">{{ it.name }}</div><div style="font-size:13px;color:#6b6a60">{{ it.cat }}</div></div><div style="font:700 15px 'Plus Jakarta Sans'">{{ it.lineFmt }}</div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;border:1.5px solid #2E2E2A"><button onClick="{{ it.dec }}" aria-label="Decrease quantity" style="width:40px;height:40px;background:none;border:0;font-size:18px">−</button><span style="min-width:24px;text-align:center;font:600 14px 'Plus Jakarta Sans'">{{ it.qty }}</span><button onClick="{{ it.inc }}" aria-label="Increase quantity" style="width:40px;height:40px;background:none;border:0;font-size:18px">+</button></div><button onClick="{{ it.remove }}" style="background:none;border:0;font-size:13px;color:#6b6a60;text-decoration:underline;min-height:40px">Remove</button></div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="padding:20px 24px 26px;border-top:1px solid #D7E4D6;background:#fff">
+    <div style="display:flex;justify-content:space-between;font:700 18px 'Plus Jakarta Sans';margin-bottom:6px"><span>Subtotal</span><span>{{ subtotal }}</span></div>
+    <div style="font-size:12px;color:#6b6a60;margin-bottom:16px">{{ shipNote }}</div>
+    <button onClick="{{ checkout }}" disabled="{{ cartEmpty }}" style="width:100%;background:#5E6F55;color:#F6F9F4;border:0;padding:17px;font:600 14px 'Plus Jakarta Sans';min-height:52px;opacity:{{ checkoutO }}">Checkout</button>
+    <div aria-live="polite" style="font-size:12px;color:#5E6F55;margin-top:10px;min-height:16px">{{ checkoutMsg }}</div>
+  </div>
+</aside>
+
+<!-- PRODUCT DETAIL -->
+<div onClick="{{ closeDetail }}" style="position:fixed;inset:0;z-index:100;background:rgba(34,37,33,.55);backdrop-filter:blur(4px);transition:opacity .45s;opacity:{{ detO }};pointer-events:{{ detPE }};display:grid;place-items:center;padding:20px;overflow:auto">
+  <div role="dialog" aria-label="Product detail" onClick="{{ stop }}" style="width:min(100%,1000px);background:#F6F9F4;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));transition:transform .7s cubic-bezier(.16,1,.3,1);transform:translateY({{ detY }});max-height:92vh;overflow:auto">
+    <div style="position:relative;min-height:320px;background:{{ d.bg }}"><div style="position:absolute;inset:0;background:{{ d.bg2 }}"></div><span style="position:absolute;left:14px;bottom:14px;font:400 10px 'Outfit';background:#F6F9F4;padding:3px 6px">PRODUCT · {{ d.ph }}</span></div>
+    <div style="padding:clamp(24px,3.5vw,48px);display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:400 11px 'Outfit';color:#5E6F55;letter-spacing:.08em">{{ d.catUp }}</span><button onClick="{{ closeDetail }}" aria-label="Close" style="width:44px;height:44px;margin:-10px -10px 0 0;background:none;border:0;font-size:22px">✕</button></div>
+      <h3 style="margin:0;font:700 clamp(28px,3.2vw,44px)/1.02 'Manrope';letter-spacing:-.04em">{{ d.name }}</h3>
+      <div style="font:700 22px 'Plus Jakarta Sans'">{{ d.priceFmt }}</div>
+      <p style="margin:0;line-height:1.65;color:#4a4d47">{{ d.desc }}</p>
+      <ul style="margin:0;padding-left:18px;line-height:1.8;color:#4a4d47;font-size:14px"><sc-for list="{{ d.details }}" as="x" hint-placeholder-count="3"><li>{{ x }}</li></sc-for></ul>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:auto;padding-top:10px"><div style="display:flex;align-items:center;border:1.5px solid #2E2E2A"><button onClick="{{ detDec }}" aria-label="Decrease" style="width:46px;height:50px;background:none;border:0;font-size:18px">−</button><span style="min-width:28px;text-align:center;font:600 15px 'Plus Jakarta Sans'">{{ detQty }}</span><button onClick="{{ detInc }}" aria-label="Increase" style="width:46px;height:50px;background:none;border:0;font-size:18px">+</button></div><button onClick="{{ detAdd }}" style="flex:1 1 160px;background:#5E6F55;color:#F6F9F4;border:0;font:600 14px 'Plus Jakarta Sans';min-height:52px" style-hover="background:#2E2E2A">Add to cart</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div aria-live="polite" style="position:fixed;left:50%;bottom:24px;z-index:120;transform:translateX(-50%) translateY({{ toastY }});transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .4s;opacity:{{ toastO }};background:#2E2E2A;color:#F6F9F4;padding:14px 22px;font:600 13px 'Plus Jakarta Sans';pointer-events:none;white-space:nowrap">{{ toast }}</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PRODUCTS = [
+{id:1,name:'Merino Walking Harness',cat:'Dogs',price:68,tag:'New',tone:'sage',desc:'A soft, structured harness with a no-pull front clip and merino-lined chest panel for all-day comfort.',details:['Merino wool lining','Rust-proof brass hardware','Sizes XS–XL']},
+{id:2,name:'Oak & Wool Cat Perch',cat:'Cats',price:124,tag:'',tone:'sand',desc:'A sculptural window perch in solid oak with a removable felted wool cushion.',details:['FSC-certified oak','Holds up to 9 kg','Machine-washable cushion']},
+{id:3,name:'Natural Rope Tug',cat:'Toys & Enrichment',price:24,tag:'',tone:'terra',desc:'Hand-knotted cotton rope for tug, fetch and gentle chewing.',details:['Undyed organic cotton','Hand-knotted','Two sizes']},
+{id:4,name:'Linen Cloud Bed',cat:'Beds & Comfort',price:148,tag:'Bestseller',tone:'sand',desc:'Deep, supportive and washable — a bed that looks as good as it feels.',details:['Stonewashed linen cover','Recycled fibre fill','Removable, washable']},
+{id:5,name:'Vegetable-tan Leather Collar',cat:'Accessories',price:56,tag:'',tone:'terra',desc:'Cut from a single hide and finished by hand. It patinas beautifully with age.',details:['Italian leather','Solid brass buckle','Sizes S–L']},
+{id:6,name:'Slow-Feed Puzzle Bowl',cat:'Toys & Enrichment',price:38,tag:'',tone:'sage',desc:'Turns mealtime into a calm, rewarding game and slows fast eaters.',details:['Food-safe ceramic','Dishwasher safe','Non-slip base']},
+{id:7,name:'Stoneware Water Bowl',cat:'Accessories',price:42,tag:'',tone:'sand',desc:'A weighty, glazed bowl that stays put and stays cool.',details:['Lead-free glaze','Dishwasher safe','Holds 900 ml']},
+{id:8,name:'Bouclé Cat Cave',cat:'Beds & Comfort',price:96,tag:'New',tone:'sage',desc:'A cosy hideaway in textured bouclé with a pillow-soft floor.',details:['Bouclé exterior','Removable cushion','Spot-clean']},
+{id:9,name:'Waxed Canvas Leash',cat:'Dogs',price:48,tag:'',tone:'terra',desc:'A supple, weatherproof leash with a padded grip that softens with use.',details:['Waxed cotton canvas','1.5 m length','Brass clip']},
+{id:10,name:'Catnip Felt Set',cat:'Cats',price:22,tag:'',tone:'sage',desc:'Three wool-felt toys stuffed with organic catnip.',details:['100% wool felt','Organic catnip','Set of three']},
+{id:11,name:'Orthopedic Lounger',cat:'Beds & Comfort',price:189,tag:'',tone:'sand',desc:'Memory-foam support for senior dogs and big sleepers.',details:['Medical-grade foam','Water-resistant base','Washable cover']},
+{id:12,name:'Sisal Scratch Arc',cat:'Cats',price:64,tag:'',tone:'terra',desc:'An arched scratcher in natural sisal that doubles as a lounge.',details:['Natural sisal','Solid base','Quiet, stable']}];
+const TONES={sage:['#8FA98F','repeating-linear-gradient(45deg,#8FA98F 0 14px,#839C83 14px 28px)'],sand:['#D7E4D6','repeating-linear-gradient(135deg,#D7E4D6 0 14px,#C5D6C4 14px 28px)'],terra:['#B7CBB5','repeating-linear-gradient(45deg,#B7CBB5 0 14px,#AFC4AD 14px 28px)']};
+const CATS=['Dogs','Cats','Toys & Enrichment','Beds & Comfort','Accessories'];
+const CAT_SPAN={Dogs:2,Cats:1,'Toys & Enrichment':1,'Beds & Comfort':1,Accessories:2};
+const NAV=[['home','Home'],['shop','Shop'],['about','About'],['contact','Contact']];
+const QUOTES=[
+{text:'Moss hasn’t left the Linen Cloud Bed since it arrived. I’m not sure I’m allowed on the sofa anymore.',who:'Sample reviewer A.',pet:'Moss, Labrador'},
+{text:'The leather collar looks better every month. Finally, something that matches the house.',who:'Sample reviewer B.',pet:'Juniper, Whippet'},
+{text:'Our two cats fought over the oak perch for a week. We ordered a second one.',who:'Sample reviewer C.',pet:'Pip & Olive, Tabbies'}];
+const CHAPTERS=[
+{title:'Morning light.',body:'Slow starts, warm floors and a favourite spot by the window.',tone:'sand',ph:'PHOTO · dog stretching on rug'},
+{title:'Out the door.',body:'Leashes, harnesses and collars made for the long way round.',tone:'sage',ph:'PHOTO · walk, autumn path'},
+{title:'Home again.',body:'Beds and bowls that belong in the room, not hidden from it.',tone:'terra',ph:'PHOTO · cat curled in a cave bed'}];
+const FAQS=[
+['How long does delivery take?','Orders ship within two working days. Standard delivery takes 3–5 days; express arrives next day. (Demo copy.)'],
+['What is your returns policy?','Unused items can be returned within 30 days for a full refund. Beds must be unwashed. (Demo copy.)'],
+['How do I choose the right size?','Each product page lists sizing. Measure your pet’s chest or length and email us if they sit between sizes.'],
+['Are your materials pet-safe?','Everything is tested for pets and made with natural, food-safe or undyed materials wherever possible.']];
+const HERO=[
+{tag:'01 — Dogs',l:['Walks worth','wandering.'],desc:'Harnesses, leashes and collars made for the long way home.',cta:'Shop for dogs',cat:'Dogs',ft:0,bg:'repeating-linear-gradient(135deg,#6f8566 0 18px,#667c5e 18px 36px)'},
+{tag:'02 — Cats',l:['Quiet corners,','perfectly claimed.'],desc:'Perches, caves and scratchers designed for how cats actually live.',cta:'Shop for cats',cat:'Cats',ft:1,bg:'repeating-linear-gradient(45deg,#7d977d 0 18px,#738d73 18px 36px)'},
+{tag:'03 — Comfort',l:['Rest, beautifully','made.'],desc:'Linen beds and loungers that belong in the room, not hidden from it.',cta:'Shop beds',cat:'Beds & Comfort',ft:3,bg:'repeating-linear-gradient(135deg,#566a4f 0 18px,#4f6249 18px 36px)'},
+{tag:'04 — Our story',l:['Because they’re','family.'],desc:'Honest materials and quiet design for the whole household.',cta:'Our story',cat:'',ft:5,bg:'repeating-linear-gradient(45deg,#8aa38a 0 18px,#809980 18px 36px)'}];
+const fmt=n=>'$'+n.toFixed(n%1?2:0);
+const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+class Component extends DCLogic {
+  state={hs:0,hp:-1,dir:1,page:'home',scrolled:false,menuOpen:false,w:1200,ready:false,hover:null,catHover:null,cart:[],cartOpen:false,checkoutMsg:'',detail:null,detQty:1,toast:'',toastOn:false,
+    q:'',cat:'All',sort:'featured',filtersOpen:false,tIdx:0,tFade:false,step:0,faq:-1,nl:'',nlState:'idle',
+    f:{name:'',email:'',message:''},err:{},formState:'idle',status:''};
+  componentDidMount(){
+    this.reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.onScroll=()=>{
+      const sc=window.scrollY>30; if(sc!==this.state.scrolled)this.setState({scrolled:sc});
+      if(!this.reduced)document.querySelectorAll('[data-speed]').forEach(el=>{const r=el.getBoundingClientRect();if(r.bottom<-200||r.top>innerHeight+200)return;const c=r.top+r.height/2-innerHeight/2;el.style.transform='translate3d(0,'+(-c*parseFloat(el.dataset.speed)).toFixed(1)+'px,0)';});
+      const s=document.getElementById('story');
+      if(s){const r=s.getBoundingClientRect();const p=Math.min(.999,Math.max(0,-r.top/(r.height-innerHeight)));const st=Math.floor(p*3);if(st!==this.state.step)this.setState({step:st});}
+    };
+    this.onResize=()=>this.setState({w:window.innerWidth});
+    this.onMove=e=>{const t=e.target.closest&&e.target.closest('[data-magnetic]');if(this.mag&&this.mag!==t){this.mag.style.transform='';this.mag=null;}
+      if(t&&!this.reduced&&this.state.w>900){const r=t.getBoundingClientRect();t.style.transition='transform .25s cubic-bezier(.16,1,.3,1)';t.style.transform='translate('+((e.clientX-r.left-r.width/2)*.22).toFixed(1)+'px,'+((e.clientY-r.top-r.height/2)*.3).toFixed(1)+'px)';this.mag=t;}};
+    window.addEventListener('scroll',this.onScroll,{passive:true});window.addEventListener('resize',this.onResize);document.addEventListener('mousemove',this.onMove);
+    this.setState({w:window.innerWidth});
+    this.cartLoad();this.hsRestart();
+    setTimeout(()=>{this.setState({ready:true});this.reveal();this.onScroll();},60);
+    this.mo=new MutationObserver(()=>{clearTimeout(this.rt);this.rt=setTimeout(()=>this.reveal(),30);});
+    this.mo.observe(document.body,{childList:true,subtree:true});
+  }
+  componentWillUnmount(){clearTimeout(this.hsT);window.removeEventListener('scroll',this.onScroll);window.removeEventListener('resize',this.onResize);document.removeEventListener('mousemove',this.onMove);this.mo&&this.mo.disconnect();}
+  cartLoad(){try{const c=JSON.parse(localStorage.getItem('ww-cart')||'[]');if(Array.isArray(c))this.setState({cart:c});}catch(e){}}
+  cartSave(cart){this.setState({cart});try{localStorage.setItem('ww-cart',JSON.stringify(cart));}catch(e){}}
+  reveal(){
+    if(this.reduced)return;
+    if(!this.io)this.io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;this.io.unobserve(el);
+      if(el.dataset.reveal==='mask')el.style.clipPath='inset(0 0 0 0)';else{el.style.opacity='1';el.style.transform='none';}
+      }),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    if(!this.cio)this.cio=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;this.cio.unobserve(el);const to=parseFloat(el.dataset.count);const t0=performance.now();const tick=n=>{const k=Math.min(1,(n-t0)/1600);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);}),{threshold:.5});
+    document.querySelectorAll('[data-reveal]:not([data-rv])').forEach((el,i)=>{el.dataset.rv='1';
+      const r=el.getBoundingClientRect();
+      if(el.dataset.reveal==='mask'){el.style.clipPath='inset(0 0 100% 0)';el.style.transition='clip-path 1.3s cubic-bezier(.76,0,.24,1)';}
+      else{el.style.opacity='0';el.style.transform='translateY(28px)';el.style.transition='opacity .9s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1)';
+        const sib=Array.from(el.parentElement.children).indexOf(el);el.style.transitionDelay=Math.min(sib,5)*70+'ms';}
+      this.io.observe(el);});
+    document.querySelectorAll('[data-count]:not([data-cv])').forEach(el=>{el.dataset.cv='1';el.textContent='0';this.cio.observe(el);});
+  }
+  go(p,cat){if(p==='home')this.hsRestart();this.setState({page:p,menuOpen:false,cartOpen:false,detail:null,ready:false,cat:cat||this.state.cat,q:cat?'':this.state.q,filtersOpen:false},()=>{window.scrollTo(0,0);setTimeout(()=>{this.setState({ready:true});this.reveal();this.onScroll();},80);});}
+  add(p,qty){const cart=this.state.cart.slice();const i=cart.findIndex(c=>c.id===p.id);if(i>-1)cart[i]={...cart[i],qty:cart[i].qty+qty};else cart.push({id:p.id,qty});this.cartSave(cart);this.flash(p.name+' added');}
+  flash(t){this.setState({toast:t,toastOn:true});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toastOn:false}),1900);}
+  setQty(id,d){const cart=this.state.cart.map(c=>c.id===id?{...c,qty:c.qty+d}:c).filter(c=>c.qty>0);this.cartSave(cart);}
+  visible(){const{q,cat,sort}=this.state;let l=PRODUCTS.filter(p=>(cat==='All'||p.cat===cat)&&(!q.trim()||(p.name+' '+p.cat).toLowerCase().includes(q.trim().toLowerCase())));
+    if(sort==='low')l=l.slice().sort((a,b)=>a.price-b.price);if(sort==='high')l=l.slice().sort((a,b)=>b.price-a.price);if(sort==='az')l=l.slice().sort((a,b)=>a.name.localeCompare(b.name));return l;}
+  card(p){const s=this.state;const h=s.hover===p.id;const t=TONES[p.tone];
+    return {name:p.name,cat:p.cat,priceFmt:fmt(p.price),ph:p.name.toLowerCase(),bg:t[0],bg2:t[1],tag:p.tag,tagDisp:p.tag?'block':'none',zoom:h?1.06:1,
+      btnY:h||s.w<900?'0':'70px',btnO:h||s.w<900?1:0,addLabel:'Quick add — '+fmt(p.price),
+      open:()=>this.setState({detail:p.id,detQty:1}),enter:()=>this.setState({hover:p.id}),leave:()=>this.setState({hover:null}),
+      add:e=>{e.stopPropagation();this.add(p,1);}};}
+  submitForm=e=>{e.preventDefault();const{name,email,message}=this.state.f;const err={};
+    if(name.trim().length<2)err.name='Please enter your name.';if(!emailOk(email))err.email='Enter a valid email address.';if(message.trim().length<10)err.message='Tell us a little more (10+ characters).';
+    if(Object.keys(err).length){this.setState({err,formState:'error',status:'Please fix the highlighted fields.'});return;}
+    this.setState({err:{},formState:'sending',status:''});
+    setTimeout(()=>this.setState({formState:'done',status:'Looks good — but this demo has no mail service connected, so your message was not sent. Please email hello@whiskersandwags.example directly.'}),900);};
+  renderVals(){
+    const s=this.state;const mobile=s.w<860;const pg=s.page;const ready=s.ready;
+    const count=s.cart.reduce((a,c)=>a+c.qty,0);
+    const lines=s.cart.map(c=>{const p=PRODUCTS.find(x=>x.id===c.id);return {name:p.name,cat:p.cat,qty:c.qty,bg:TONES[p.tone][1],lineFmt:fmt(p.price*c.qty),dec:()=>this.setQty(p.id,-1),inc:()=>this.setQty(p.id,1),remove:()=>this.setQty(p.id,-c.qty)};});
+    const sub=s.cart.reduce((a,c)=>a+PRODUCTS.find(x=>x.id===c.id).price*c.qty,0);
+    const links=NAV.map(([k,l],i)=>({label:l,go:()=>this.go(k),goM:()=>this.go(k),ul:pg===k?'100%':'0',delay:(0.15+i*0.07)+'s'}));
+    const dp=PRODUCTS.find(p=>p.id===s.detail)||PRODUCTS[0];const dt=TONES[dp.tone];
+    const list=this.visible();
+    const q=QUOTES[s.tIdx];
+    const nlBad=s.nlState==='error';
+    const fe=s.err;const fs=s.formState;
+    const chips=['All',...CATS].map(c=>({label:c,on:s.cat===c,bg:s.cat===c?'#2E2E2A':'transparent',fg:s.cat===c?'#F6F9F4':'#2E2E2A',go:()=>this.setState({cat:c})}));
+    const hp=ready?'none':'translateY(24px)';
+    return {
+      ...this.heroVals(mobile,ready),navBg:s.scrolled?'rgba(248,246,241,.72)':'rgba(248,246,241,0)',navBlur:s.scrolled?'blur(16px) saturate(1.5)':'none',navBorder:s.scrolled?'rgba(34,37,33,.08)':'transparent',
+      isDesktop:!mobile,isMobile:mobile,navLinks:links,cartCount:count,menuOpen:s.menuOpen,
+      menuClip:s.menuOpen?'inset(0 0 0 0)':'inset(0 0 100% 0)',menuPE:s.menuOpen?'auto':'none',menuItemT:s.menuOpen?'none':'translateY(40px)',menuItemO:s.menuOpen?1:0,
+      toggleMenu:()=>this.setState({menuOpen:!s.menuOpen}),goHome:()=>this.go('home'),goShop:()=>this.go('shop'),goAbout:()=>this.go('about'),
+      goSearch:()=>{this.go('shop');setTimeout(()=>{const i=document.getElementById('shop-search');i&&i.focus({preventScroll:true});},350);},
+      openCart:()=>this.setState({cartOpen:true,checkoutMsg:''}),closeCart:()=>this.setState({cartOpen:false}),
+      isHome:pg==='home',isShop:pg==='shop',isAbout:pg==='about',isContact:pg==='contact',
+      heroT:ready?'translateY(0)':'translateY(108%)',heroO:ready?1:0,heroP:hp,heroClip:ready?'inset(0 0 0 0)':'inset(100% 0 0 0)',heroClip2:ready?'inset(0 0 0 0)':'inset(0 100% 0 0)',
+      catCards:CATS.map(c=>({name:c,count:PRODUCTS.filter(p=>p.cat===c).length,span:mobile?1:CAT_SPAN[c],bg:TONES[['sand','sage','terra','sand','sage'][CATS.indexOf(c)]][1],ph:'PHOTO · '+c.toLowerCase(),zoom:s.catHover===c?1.06:1,arrow:s.catHover===c?'4px':'0',arrowBg:s.catHover===c?'#5E6F55':'#2E2E2A',
+        enter:()=>this.setState({catHover:c}),leave:()=>this.setState({catHover:null}),go:()=>this.go('shop',c)})),
+      featured:[1,2,3,4,5,6].map(id=>this.card(PRODUCTS.find(p=>p.id===id))),
+      chapters:CHAPTERS.map((c,i)=>({title:c.title,body:c.body,ph:c.ph,bg:TONES[c.tone][1],o:s.step===i?1:0,y:s.step===i?'0':(s.step>i?'-30px':'30px'),bar:s.step===i?'48px':'20px',barC:s.step===i?'#5E6F55':'#5a5e56',clip:s.step>=i?'inset(0 0 0 0)':'inset(100% 0 0 0)',sc:s.step===i?1:1.08})),
+      chapterNo:'0'+(s.step+1),
+      quote:q,tO:s.tFade?0:1,tY:s.tFade?'12px':'0',tNo:'0'+(s.tIdx+1),tTotal:'0'+QUOTES.length,
+      prevT:()=>this.slideT(-1),nextT:()=>this.slideT(1),
+      nlEmail:s.nl,onNl:e=>this.setState({nl:e.target.value,nlState:'idle'}),nlBorder:nlBad?'#B4482A':'transparent',nlColor:nlBad?'#B4482A':'#4a4d47',
+      nlMsg:s.nlState==='error'?'Please enter a valid email address.':s.nlState==='done'?'Thanks — demo only: no email service is connected, so nothing was stored.':'',
+      subNews:e=>{e.preventDefault();this.setState({nlState:emailOk(s.nl)?'done':'error'});},
+      q:s.q,onQ:e=>this.setState({q:e.target.value}),sort:s.sort,onSort:e=>this.setState({sort:e.target.value}),
+      showChips:!mobile||s.filtersOpen,chips,toggleFilters:()=>this.setState({filtersOpen:!s.filtersOpen}),filterBadge:s.cat!=='All'?'(1)':'',
+      shopList:list.map(p=>this.card(p)),resultCount:list.length+(list.length===1?' product':' products')+(s.cat!=='All'?' · '+s.cat:''),noResults:list.length===0,
+      clearFilters:()=>this.setState({q:'',cat:'All'}),
+      philosophy:[{n:'01',t:'Fewer, better.',b:'We stock what we’d buy ourselves — and stop there.'},{n:'02',t:'Honest materials.',b:'Wool, oak, linen, leather. Things that age well instead of wearing out.'},{n:'03',t:'Pets first.',b:'Comfort and safety lead every decision. Design follows.'}],
+      stats:[{v:12000,suf:'+',l:'Happy pets (demo figure)'},{v:48,suf:'',l:'Considered products'},{v:9,suf:'',l:'Independent makers'},{v:100,suf:'%',l:'Pet-safe materials'}],
+      f:s.f,onName:e=>this.setState({f:{...s.f,name:e.target.value}}),onEmail:e=>this.setState({f:{...s.f,email:e.target.value}}),onMsg:e=>this.setState({f:{...s.f,message:e.target.value}}),
+      err:{name:fe.name||'',email:fe.email||'',message:fe.message||'',nameC:fe.name?'#B4482A':'#2E2E2A',emailC:fe.email?'#B4482A':'#2E2E2A',msgC:fe.message?'#B4482A':'#2E2E2A',nameBool:!!fe.name,emailBool:!!fe.email,msgBool:!!fe.message},
+      submitForm:this.submitForm,sending:fs==='sending',sendO:fs==='sending'?.6:1,sendLabel:fs==='sending'?'Sending…':'Send message',status:s.status,statusDisp:s.status?'block':'none',statusPad:'14px 16px',
+      faqs:FAQS.map(([qq,a],i)=>({q:qq,a,open:s.faq===i,rot:s.faq===i?'45deg':'0deg',rows:s.faq===i?'1fr':'0fr',toggle:()=>this.setState({faq:s.faq===i?-1:i})})),
+      footCats:CATS.map(c=>({name:c,go:()=>this.go('shop',c)})),
+      cartX:s.cartOpen?'0':'105%',cartScrimO:s.cartOpen?1:0,cartPE:s.cartOpen?'auto':'none',cartLines:lines,cartEmpty:lines.length===0,subtotal:fmt(sub),
+      shipNote:sub>=60?'Free shipping applied.':'Free shipping on orders over $60.',checkoutO:lines.length?1:.4,checkoutMsg:s.checkoutMsg,
+      checkout:()=>this.setState({checkoutMsg:'Demo store — payments aren’t connected yet.'}),goShopClose:()=>this.go('shop'),
+      detO:s.detail?1:0,detPE:s.detail?'auto':'none',detY:s.detail?'0':'40px',stop:e=>e.stopPropagation(),closeDetail:()=>this.setState({detail:null}),
+      d:{name:dp.name,priceFmt:fmt(dp.price),desc:dp.desc,details:dp.details,bg:dt[0],bg2:dt[1],ph:dp.name.toLowerCase(),catUp:dp.cat.toUpperCase()},
+      detQty:s.detQty,detDec:()=>this.setState({detQty:Math.max(1,s.detQty-1)}),detInc:()=>this.setState({detQty:s.detQty+1}),
+      detAdd:()=>{this.add(dp,s.detQty);this.setState({detail:null,cartOpen:true,checkoutMsg:''});},
+      toast:s.toast,toastO:s.toastOn?1:0,toastY:s.toastOn?'0':'20px'
+    };
+  }
+  heroGo(n,dir){const L=HERO.length;const nn=(n+L)%L;if(nn===this.state.hs)return;this.setState(s=>({hp:s.hs,hs:nn,dir:dir}));this.hsRestart();}
+  hsRestart(){clearTimeout(this.hsT);if(this.reduced)return;this.hsT=setTimeout(()=>{if(this.state.page==='home'&&!document.hidden)this.heroGo(this.state.hs+1,1);else this.hsRestart();},5600);}
+  heroVals(mobile,ready){const s=this.state;
+    const slides=HERO.map((h,i)=>{const cur=s.hs===i;const prev=s.hp===i&&!cur;const on=cur&&ready;
+      const T=on?'translateY(0)':'translateY(112%)';
+      const tr=d=>on?'transform 1.1s cubic-bezier(.16,1,.3,1) '+d+'s':'transform .4s ease 0s';
+      const n=h.l.length;
+      return {z:cur?3:prev?2:1,vis:cur||prev?1:0,hd:cur||prev?'0s':'1.6s',
+        clip:cur||prev?'inset(0 0 0 0)':(s.dir>0?'inset(0 0 0 100%)':'inset(0 100% 0 0)'),
+        t:cur?'scale(1) translateX(0)':prev?'scale(1.06) translateX('+(s.dir>0?'-5%':'5%')+')':'scale(1.2) translateX(0)',bg:h.bg,
+        pe:cur?'auto':'none',tab:cur?0:-1,T:T,tag:h.tag,tagTr:tr(.4),descTr:tr(.55+n*.12),ctaTr:tr(.7+n*.12),
+        lines:h.l.map((x,j)=>({t:x,T:T,tr:tr(.5+j*.12)})),desc:h.desc,ctaLabel:h.cta,
+        cta:()=>h.cat?this.go('shop',h.cat):this.go('about'),
+        ftName:PRODUCTS[h.ft].name,ftPrice:fmt(PRODUCTS[h.ft].price),openFt:()=>this.setState({detail:PRODUCTS[h.ft].id,detQty:1}),
+        gO:on?1:0,gT:on?'translateY(0)':'translateY(16px)'};});
+    const dots=HERO.map((h,i)=>({n:'0'+(i+1),cur:s.hs===i,o:s.hs===i?1:.6,w:s.hs===i?(mobile?'44px':'72px'):(mobile?'16px':'28px'),
+      fill:s.hs===i?'100%':'0',fillTr:s.hs===i&&!this.reduced?'width 5.6s linear':'none',go:()=>this.heroGo(i,i>s.hs?1:-1)}));
+    return {heroSlides:slides,heroDots:dots,heroPrev:()=>this.heroGo(s.hs-1,-1),heroNext:()=>this.heroGo(s.hs+1,1),showGlass:!mobile,
+      heroTS:e=>{this.tx=e.touches[0].clientX;},
+      heroTE:e=>{const dx=e.changedTouches[0].clientX-this.tx;if(Math.abs(dx)>50)this.heroGo(s.hs+(dx<0?1:-1),dx<0?1:-1);},
+      heroMM:e=>{if(this.reduced||this.state.w<860)return;const el=e.currentTarget;const r=el.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.querySelectorAll('[data-hpar]').forEach(p=>{p.style.transition='transform .8s cubic-bezier(.16,1,.3,1)';p.style.transform='translate3d('+(-x*34).toFixed(1)+'px,'+(-y*22).toFixed(1)+'px,0)';});}};}
+  slideT(d){this.setState({tFade:true});setTimeout(()=>this.setState(s=>({tIdx:(s.tIdx+d+QUOTES.length)%QUOTES.length,tFade:false})),350);}
+}
+</script>
+</body>
+</html>

@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { HERO, fmt, getProductSync } from "@/lib/data";
 import { useCart } from "../CartProvider";
 import { useReducedMotion, useWidth } from "../hooks";
+import Photo from "../Photo";
+import { HERO_PHOTOS } from "@/lib/images";
 import { Magnetic, Parallax } from "../Motion";
 import { J, M, O } from "../ui";
 
@@ -105,7 +107,9 @@ export default function HeroCarousel() {
                     transform: cur ? "scale(1) translateX(0)" : prev ? `scale(1.06) translateX(${dir > 0 ? "-5%" : "5%"})` : "scale(1.2) translateX(0)",
                     transition: "transform 2.6s cubic-bezier(.16,1,.3,1)",
                   }}
-                />
+                >
+                  <Photo photo={HERO_PHOTOS[i]} sizes="100vw" priority={i === 0} />
+                </div>
               </div>
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(46,46,42,.68),rgba(46,46,42,.18) 72%),linear-gradient(0deg,rgba(46,46,42,.55),transparent 45%)" }} />
             </div>

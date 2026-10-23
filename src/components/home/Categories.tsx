@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { CATS, CAT_SPAN, CAT_TONE, TONES, getProductsSync } from "@/lib/data";
 import { useWidth } from "../hooks";
+import Photo from "../Photo";
+import { CATEGORY_PHOTOS } from "@/lib/images";
 import { Reveal } from "../Motion";
-import { J, M, O, eyebrow } from "../ui";
+import { J, M, eyebrow } from "../ui";
 
 export default function Categories() {
   const w = useWidth();
@@ -36,8 +38,10 @@ export default function Categories() {
                 onBlur={() => setHover(null)}
                 style={{ position: "relative", overflow: "hidden", textAlign: "left", color: "#2E2E2A", background: "#D7E4D6" }}
               >
-                <div style={{ position: "absolute", inset: 0, background: TONES[CAT_TONE[c]][1], transition: "transform 1.1s cubic-bezier(.16,1,.3,1)", transform: `scale(${h ? 1.06 : 1})` }} />
-                <span style={{ position: "absolute", left: 14, top: 14, font: `400 10px ${O}`, background: "#F6F9F4", padding: "3px 6px" }}>PHOTO · {c.toLowerCase()}</span>
+                <div style={{ position: "absolute", inset: 0, background: TONES[CAT_TONE[c]][1], transition: "transform 1.1s cubic-bezier(.16,1,.3,1)", transform: `scale(${h ? 1.06 : 1})` }}>
+                  <Photo photo={CATEGORY_PHOTOS[c]} sizes="(max-width:860px) 100vw, 40vw" />
+                </div>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 45%,rgba(46,46,42,.28))" }} />
                 <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: 22, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                   <div style={{ background: "rgba(246,249,244,.82)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", padding: "12px 16px" }}>
                     <div style={{ font: `700 20px ${J}`, letterSpacing: "-.03em" }}>{c}</div>

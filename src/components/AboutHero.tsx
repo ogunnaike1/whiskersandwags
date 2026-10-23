@@ -2,13 +2,15 @@
 
 import { motion } from "motion/react";
 import { Parallax } from "./Motion";
-import { M, O, eyebrow } from "./ui";
+import Photo from "./Photo";
+import { ABOUT_PHOTOS } from "@/lib/images";
+import { M, eyebrow } from "./ui";
 
 export default function AboutHero() {
   return (
     <section className="on-dark" style={{ position: "relative", height: "min(88vh,860px)", minHeight: 520, overflow: "hidden", background: "#2E2E2A", color: "#F6F9F4" }}>
-      <Parallax speed={0.12} style={{ position: "absolute", inset: "-12% 0", background: "repeating-linear-gradient(135deg,#3b3f39 0 18px,#33372f 18px 36px)", display: "flex", alignItems: "flex-start", padding: "100px 22px" }}>
-        <span style={{ font: `400 11px ${O}`, color: "#8FA98F", background: "#2E2E2A", padding: "4px 8px" }}>PHOTO · wide, golden-hour meadow, woman walking two dogs · 16:9</span>
+      <Parallax speed={0.12} style={{ position: "absolute", inset: "-12% 0", background: "#33372f" }}>
+        <Photo photo={ABOUT_PHOTOS.hero} sizes="100vw" priority />
       </Parallax>
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "clamp(24px,5vw,72px)", background: "linear-gradient(transparent,rgba(34,37,33,.85))" }}>
         <div style={{ ...eyebrow("#8FA98F"), marginBottom: 16 }}>About us</div>

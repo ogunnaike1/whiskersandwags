@@ -4,6 +4,8 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 import { TONES, fmt, getProductSync } from "@/lib/data";
 import { useCart } from "./CartProvider";
+import Photo from "./Photo";
+import { PRODUCT_PHOTOS } from "@/lib/images";
 import { J, M, O } from "./ui";
 
 export default function ProductDetail() {
@@ -39,7 +41,7 @@ export default function ProductDetail() {
       >
         <div style={{ position: "relative", minHeight: 320, background: t[0] }}>
           <div style={{ position: "absolute", inset: 0, background: t[1] }} />
-          <span style={{ position: "absolute", left: 14, bottom: 14, font: `400 10px ${O}`, background: "#F6F9F4", padding: "3px 6px" }}>PRODUCT · {shown.name.toLowerCase()}</span>
+          {open && <Photo photo={PRODUCT_PHOTOS[shown.id]} sizes="(max-width:1000px) 100vw, 500px" />}
         </div>
         <div style={{ padding: "clamp(24px,3.5vw,48px)", display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

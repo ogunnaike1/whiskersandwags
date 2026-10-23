@@ -4,7 +4,9 @@ import { useState } from "react";
 import { TONES, fmt, type Product } from "@/lib/data";
 import { useCart } from "./CartProvider";
 import { useWidth } from "./hooks";
-import { J, O } from "./ui";
+import Photo from "./Photo";
+import { PRODUCT_PHOTOS } from "@/lib/images";
+import { J } from "./ui";
 
 export default function ProductCard({ p }: { p: Product }) {
   const { add, openDetail } = useCart();
@@ -26,8 +28,9 @@ export default function ProductCard({ p }: { p: Product }) {
         onBlur={() => setHover(false)}
         style={{ position: "relative", aspectRatio: "4/5", overflow: "hidden", background: t[0], cursor: "pointer" }}
       >
-        <div style={{ position: "absolute", inset: 0, background: t[1], transition: "transform 1.1s cubic-bezier(.16,1,.3,1)", transform: `scale(${hover ? 1.06 : 1})` }} />
-        <span style={{ position: "absolute", left: 12, top: 12, font: `400 10px ${O}`, background: "#F6F9F4", padding: "3px 6px" }}>PRODUCT · {p.name.toLowerCase()}</span>
+        <div style={{ position: "absolute", inset: 0, background: t[1], transition: "transform 1.1s cubic-bezier(.16,1,.3,1)", transform: `scale(${hover ? 1.06 : 1})` }}>
+          <Photo photo={PRODUCT_PHOTOS[p.id]} sizes="(max-width:600px) 100vw, (max-width:1100px) 33vw, 25vw" />
+        </div>
         {p.tag && <span style={{ position: "absolute", right: 12, top: 12, font: `600 11px ${J}`, letterSpacing: ".06em", background: "#5E6F55", color: "#fff", padding: "4px 8px" }}>{p.tag}</span>}
         <button
           onClick={(e) => { e.stopPropagation(); add(p, 1); }}

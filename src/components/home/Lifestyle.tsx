@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { CHAPTERS, TONES } from "@/lib/data";
 import { Parallax } from "../Motion";
+import Photo from "../Photo";
+import { CHAPTER_PHOTOS, LIFE_PHOTOS } from "@/lib/images";
 import { M, O } from "../ui";
 
 export default function Lifestyle() {
@@ -31,11 +33,11 @@ export default function Lifestyle() {
             <span style={{ font: `300 1em ${M}`, color: "#8FA98F", letterSpacing: "-.03em" }}>mornings.</span>
           </h2>
         </Parallax>
-        <Parallax speed={-0.12} style={{ position: "absolute", right: "clamp(20px,6vw,100px)", top: "6%", width: "clamp(180px,30vw,440px)", aspectRatio: "3/4", background: "repeating-linear-gradient(135deg,#3b3f39 0 14px,#33372f 14px 28px)", display: "flex", alignItems: "flex-end", padding: 12, zIndex: 2 }}>
-          <span style={{ font: `400 10px ${O}`, color: "#8FA98F", background: "#2E2E2A", padding: "3px 6px" }}>PHOTO · cat on sunlit windowsill</span>
+        <Parallax speed={-0.12} style={{ position: "absolute", right: "clamp(20px,6vw,100px)", top: "6%", width: "clamp(180px,30vw,440px)", aspectRatio: "3/4", background: "#33372f", zIndex: 2 }}>
+          <Photo photo={LIFE_PHOTOS.cat} sizes="(max-width:860px) 40vw, 30vw" />
         </Parallax>
-        <Parallax speed={0.1} style={{ position: "absolute", left: "clamp(40px,14vw,220px)", bottom: 0, width: "clamp(200px,36vw,540px)", aspectRatio: "4/3", background: "repeating-linear-gradient(45deg,#8FA98F 0 14px,#839C83 14px 28px)", display: "flex", alignItems: "flex-end", padding: 12, zIndex: 3 }}>
-          <span style={{ font: `400 10px ${O}`, color: "#2d3a2a", background: "#F6F9F4", padding: "3px 6px" }}>PHOTO · dog asleep on linen bed</span>
+        <Parallax speed={0.1} style={{ position: "absolute", left: "clamp(40px,14vw,220px)", bottom: 0, width: "clamp(200px,36vw,540px)", aspectRatio: "4/3", background: "#839C83", zIndex: 3 }}>
+          <Photo photo={LIFE_PHOTOS.dog} sizes="(max-width:860px) 60vw, 36vw" />
         </Parallax>
         <Parallax speed={-0.04} style={{ position: "absolute", right: "clamp(20px,8vw,140px)", bottom: "4%", maxWidth: 300, padding: "22px 24px", background: "rgba(246,249,244,.10)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(246,249,244,.22)", zIndex: 4 }}>
           <div style={{ font: `400 11px ${O}`, color: "#8FA98F", marginBottom: 8 }}>THE LIVING EDIT</div>
@@ -64,8 +66,8 @@ export default function Lifestyle() {
           </div>
           <div style={{ position: "relative", height: "min(68vh,620px)" }}>
             {CHAPTERS.map((ch, i) => (
-              <div key={ch.title} style={{ position: "absolute", inset: 0, background: TONES[ch.tone][1], transition: "clip-path 1.1s cubic-bezier(.76,0,.24,1),transform 1.4s cubic-bezier(.16,1,.3,1)", clipPath: step >= i ? "inset(0 0 0 0)" : "inset(100% 0 0 0)", transform: `scale(${step === i ? 1 : 1.08})`, display: "flex", alignItems: "flex-end", padding: 14 }}>
-                <span style={{ font: `400 10px ${O}`, background: "#F6F9F4", color: "#6b6a60", padding: "3px 6px" }}>{ch.ph}</span>
+              <div key={ch.title} style={{ position: "absolute", inset: 0, background: TONES[ch.tone][1], transition: "clip-path 1.1s cubic-bezier(.76,0,.24,1),transform 1.4s cubic-bezier(.16,1,.3,1)", clipPath: step >= i ? "inset(0 0 0 0)" : "inset(100% 0 0 0)", transform: `scale(${step === i ? 1 : 1.08})`, }}>
+                <Photo photo={CHAPTER_PHOTOS[i]} sizes="(max-width:860px) 90vw, 45vw" />
               </div>
             ))}
           </div>

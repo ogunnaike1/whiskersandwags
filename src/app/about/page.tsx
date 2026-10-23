@@ -3,6 +3,8 @@ import { CountUp, Reveal } from "@/components/Motion";
 import AboutHero from "@/components/AboutHero";
 import { GoLink } from "@/components/GoLink";
 import { PHILOSOPHY, STATS } from "@/lib/data";
+import Photo from "@/components/Photo";
+import { ABOUT_PHOTOS } from "@/lib/images";
 import { J, M, O, eyebrow } from "@/components/ui";
 
 export const metadata: Metadata = { title: "About — Whiskers & Wags" };
@@ -18,11 +20,11 @@ export default function About() {
         </Reveal>
       </section>
       <section style={{ padding: "0 clamp(20px,5vw,72px) clamp(64px,9vw,140px)", display: "grid", gridTemplateColumns: "repeat(12,1fr)", gap: 14, maxWidth: 1400, margin: "0 auto" }}>
-        <Reveal mask style={{ gridColumn: "span 7", minWidth: 0, aspectRatio: "4/3", overflow: "hidden", background: "repeating-linear-gradient(135deg,#D7E4D6 0 16px,#C5D6C4 16px 32px)", display: "flex", alignItems: "flex-end", padding: 12 }}>
-          <span style={{ font: `400 10px ${O}`, background: "#F6F9F4", padding: "3px 6px", color: "#6b6a60" }}>PHOTO · studio at home, dog &amp; samples</span>
+        <Reveal mask style={{ gridColumn: "span 7", minWidth: 0, aspectRatio: "4/3", overflow: "hidden", background: "#C5D6C4", position: "relative" }}>
+          <Photo photo={ABOUT_PHOTOS.studio} sizes="(max-width:860px) 60vw, 55vw" />
         </Reveal>
-        <Reveal mask style={{ gridColumn: "span 5", minWidth: 0, marginTop: "clamp(30px,8vw,120px)", aspectRatio: "3/4", overflow: "hidden", background: "repeating-linear-gradient(45deg,#8FA98F 0 14px,#839C83 14px 28px)", display: "flex", alignItems: "flex-end", padding: 12 }}>
-          <span style={{ font: `400 10px ${O}`, background: "#F6F9F4", padding: "3px 6px", color: "#6b6a60" }}>PHOTO · cat, wool basket</span>
+        <Reveal mask style={{ gridColumn: "span 5", minWidth: 0, marginTop: "clamp(30px,8vw,120px)", aspectRatio: "3/4", overflow: "hidden", background: "#839C83", position: "relative" }}>
+          <Photo photo={ABOUT_PHOTOS.cat} sizes="(max-width:860px) 40vw, 40vw" />
         </Reveal>
       </section>
       <section style={{ background: "#D7E4D6", padding: "clamp(64px,9vw,130px) clamp(20px,5vw,72px)" }}>

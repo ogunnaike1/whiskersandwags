@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { TONES, fmt, getProductSync } from "@/lib/data";
 import { useCart } from "./CartProvider";
+import Photo from "./Photo";
+import { PRODUCT_PHOTOS } from "@/lib/images";
 import { J, M, O } from "./ui";
 
 export default function CartDrawer() {
@@ -52,7 +54,9 @@ export default function CartDrawer() {
           )}
           {lines.map(({ p, qty }) => (
             <div key={p.id} style={{ display: "flex", gap: 16, padding: "18px 0", borderBottom: "1px solid #D7E4D6" }}>
-              <div style={{ width: 84, height: 104, flex: "none", background: TONES[p.tone][1] }} />
+              <div style={{ position: "relative", width: 84, height: 104, flex: "none", background: TONES[p.tone][1] }}>
+                <Photo photo={PRODUCT_PHOTOS[p.id]} sizes="84px" />
+              </div>
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
                   <div>

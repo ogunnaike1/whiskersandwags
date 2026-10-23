@@ -11,7 +11,7 @@ import { HERO_PHOTOS } from "@/lib/images";
 import { Magnetic, Parallax } from "../Motion";
 import { J, M, O } from "../ui";
 
-const INTERVAL = 5600;
+const INTERVAL = 4000;
 const glass = {
   background: "rgba(246,249,244,.14)",
   backdropFilter: "blur(18px) saturate(1.4)",
@@ -97,7 +97,7 @@ export default function HeroCarousel() {
               style={{
                 position: "absolute", inset: 0, zIndex: cur ? 3 : prev ? 2 : 1, opacity: cur || prev ? 1 : 0,
                 clipPath: cur || prev ? "inset(0 0 0 0)" : dir > 0 ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)",
-                transition: `clip-path 1.5s cubic-bezier(.76,0,.24,1),opacity 0s linear ${cur || prev ? "0s" : "1.6s"}`,
+                transition: `clip-path 1.1s cubic-bezier(.76,0,.24,1),opacity 0s linear ${cur || prev ? "0s" : "1.2s"}`,
               }}
             >
               <div data-hpar="1" style={{ position: "absolute", inset: "-4%" }}>
@@ -105,7 +105,7 @@ export default function HeroCarousel() {
                   style={{
                     position: "absolute", inset: 0, background: h.bg,
                     transform: cur ? "scale(1) translateX(0)" : prev ? `scale(1.06) translateX(${dir > 0 ? "-5%" : "5%"})` : "scale(1.2) translateX(0)",
-                    transition: "transform 2.6s cubic-bezier(.16,1,.3,1)",
+                    transition: "transform 2s cubic-bezier(.16,1,.3,1)",
                   }}
                 >
                   <Photo photo={HERO_PHOTOS[i]} sizes="100vw" priority={i === 0} />
@@ -123,22 +123,22 @@ export default function HeroCarousel() {
           const cur = hs === i;
           const on = cur && ready;
           const T = on ? "translateY(0)" : "translateY(112%)";
-          const tr = (d: number) => (on ? `transform 1.1s cubic-bezier(.16,1,.3,1) ${d}s` : "transform .4s ease 0s");
+          const tr = (d: number) => (on ? `transform .9s cubic-bezier(.16,1,.3,1) ${d}s` : "transform .4s ease 0s");
           const n = h.l.length;
           return (
             <div key={i} aria-hidden={!cur} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${L}`} style={{ gridArea: "1/1", alignSelf: "end", maxWidth: "min(100%,1000px)", pointerEvents: cur ? "auto" : "none" }}>
               <div style={{ overflow: "hidden", marginBottom: 22 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, font: `500 12px ${J}`, letterSpacing: ".18em", textTransform: "uppercase", color: "#D7E4D6", transform: T, transition: tr(0.4) }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, font: `500 12px ${J}`, letterSpacing: ".18em", textTransform: "uppercase", color: "#D7E4D6", transform: T, transition: tr(0.3) }}>
                   <span style={{ width: 36, height: 1, background: "#D7E4D6" }} />
                   {h.tag}
                 </div>
               </div>
               {cur ? <h1 style={h1}>{lines(h.l, T, tr)}</h1> : <h2 style={h1}>{lines(h.l, T, tr)}</h2>}
               <div style={{ overflow: "hidden", margin: "26px 0 34px" }}>
-                <p style={{ margin: 0, maxWidth: 440, font: `300 clamp(16px,1.35vw,20px)/1.6 ${O}`, color: "#EEF3EC", transform: T, transition: tr(0.55 + n * 0.12) }}>{h.desc}</p>
+                <p style={{ margin: 0, maxWidth: 440, font: `300 clamp(16px,1.35vw,20px)/1.6 ${O}`, color: "#EEF3EC", transform: T, transition: tr(0.4 + n * 0.1) }}>{h.desc}</p>
               </div>
               <div style={{ overflow: "hidden", padding: 2 }}>
-                <div style={{ transform: T, transition: tr(0.7 + n * 0.12) }}>
+                <div style={{ transform: T, transition: tr(0.5 + n * 0.1) }}>
                   <Magnetic
                     className="hv-forest"
                     onClick={() => router.push(h.cat ? `/shop?cat=${encodeURIComponent(h.cat)}` : "/about")}
@@ -211,7 +211,7 @@ const h1 = { margin: 0, font: `700 clamp(42px,7vw,104px)/1 ${M}`, letterSpacing:
 function lines(l: string[], T: string, tr: (d: number) => string) {
   return l.map((x, j) => (
     <span key={j} style={{ display: "block", overflow: "hidden", paddingBottom: ".1em" }}>
-      <span style={{ display: "block", transform: T, transition: tr(0.5 + j * 0.12) }}>{x}</span>
+      <span style={{ display: "block", transform: T, transition: tr(0.35 + j * 0.1) }}>{x}</span>
     </span>
   ));
 }

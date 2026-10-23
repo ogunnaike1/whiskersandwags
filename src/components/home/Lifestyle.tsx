@@ -25,7 +25,7 @@ export default function Lifestyle() {
   }, []);
 
   return (
-    <section className="on-dark" style={{ background: "#2E2E2A", color: "#F6F9F4", position: "relative", overflow: "hidden", padding: "clamp(80px,12vw,200px) 0 clamp(60px,8vw,120px)" }}>
+    <section className="on-dark" style={{ background: "#2E2E2A", color: "#F6F9F4", position: "relative", overflow: "clip", padding: "clamp(80px,12vw,200px) 0 clamp(60px,8vw,120px)" }}>
       <div style={{ position: "relative", height: "clamp(520px,70vw,900px)" }}>
         <Parallax speed={0.04} style={{ position: "absolute", left: "clamp(20px,5vw,72px)", top: 0, zIndex: 1 }}>
           <h2 style={{ margin: 0, font: `700 clamp(64px,15vw,240px)/.88 ${M}`, letterSpacing: "-.06em" }}>
@@ -64,7 +64,7 @@ export default function Lifestyle() {
               ))}
             </div>
           </div>
-          <div style={{ position: "relative", height: "min(68vh,620px)" }}>
+          <div style={{ position: "relative", height: "min(68vh,620px)", overflow: "hidden" }}>
             {CHAPTERS.map((ch, i) => (
               <div key={ch.title} style={{ position: "absolute", inset: 0, background: TONES[ch.tone][1], transition: "clip-path 1.1s cubic-bezier(.76,0,.24,1),transform 1.4s cubic-bezier(.16,1,.3,1)", clipPath: step >= i ? "inset(0 0 0 0)" : "inset(100% 0 0 0)", transform: `scale(${step === i ? 1 : 1.08})`, }}>
                 <Photo photo={CHAPTER_PHOTOS[i]} sizes="(max-width:860px) 90vw, 45vw" />
